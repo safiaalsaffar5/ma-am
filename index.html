@@ -894,12 +894,11 @@ let showDone = false;
 function render() {
   const { open, doneToday } = todays();
   const now = new Date();
-  const h = now.getHours();
   const up = S.tasks.filter(x => !x.done && (!x.day || x.day > todayKey())).length;
 
   $("#eyebrow").textContent = new Intl.DateTimeFormat(locale(), { weekday: "long", day: "numeric", month: "long" }).format(now);
   if (view === "today") {
-    $("#greet").textContent = h >= 4 && h < 12 ? "صباح الخير" : h >= 12 && h < 17 ? "يومك سعيد" : "مساء الخير";
+    $("#greet").textContent = "صباح الخير";
     $("#summary").textContent = summaryLine(open, doneToday);
     updateProgress(open, doneToday);
   } else {
