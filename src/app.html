@@ -445,9 +445,11 @@ button.stat:active { transform: scale(0.98); }
 .grabber { width: 36px; height: 5px; border-radius: 3px; background: var(--line-strong); justify-self: center; }
 .sheet__head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); margin-block-start: calc(-1 * var(--s-2)); }
 .sheet__title { font-size: var(--fs-14); color: var(--text-2); font-weight: var(--w-bold); }
-.sheet__inputs { display: grid; gap: var(--s-2); padding-block-end: var(--s-4); border-bottom: 1px solid var(--line); }
-.sheet__inputs .t1 { font-family: var(--font-display); font-weight: var(--w-bold); font-size: var(--fs-25); line-height: var(--lh-25); }
-.sheet__inputs .t2 { font-size: var(--fs-14); line-height: var(--lh-14); color: var(--text-2); }
+.sheet__inputs { display: grid; gap: var(--s-2); }
+.sheet__inputs .t1, .sheet__inputs .t2 { background: var(--surface-2); border-radius: var(--r-md); box-shadow: inset 0 0 0 1px var(--line); transition: box-shadow var(--t-fast), background-color var(--t-fast); }
+.sheet__inputs .t1:focus, .sheet__inputs .t2:focus { background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--accent), 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent); }
+.sheet__inputs .t1 { font-family: var(--font-display); font-weight: var(--w-bold); font-size: var(--fs-25); line-height: var(--lh-25); padding: 10px var(--s-4); }
+.sheet__inputs .t2 { font-size: var(--fs-16); line-height: var(--lh-16); color: var(--text); padding: 10px var(--s-4); }
 .sheet__grid { display: grid; gap: var(--s-4); }
 .sheet__section { display: grid; gap: var(--s-1); align-content: start; }
 .sheet__foot { display: flex; gap: var(--s-3); align-items: center; }
@@ -1065,7 +1067,7 @@ function renderTaskSheet() {
     </div>
     <div class="sheet__foot">
       ${d.id ? `<button type="button" class="btn btn--danger" data-s="delete">${I.trash}حذف</button>` : ""}
-      <button type="submit" class="btn btn--primary" id="f-submit" ${d.title.trim() ? "" : "disabled"}>${d.id ? "حفظ" : "إضافة"}</button>
+      <button type="submit" class="btn btn--primary" id="f-submit" ${d.title.trim() || (d.note || "").trim() ? "" : "disabled"}>${d.id ? "حفظ" : "إضافة"}</button>
     </div>`;
 }
 
@@ -1096,8 +1098,9 @@ function commitNote() {
 sheet.addEventListener("input", e => {
   if (!draft) return;
   const id = e.target.id;
-  if (id === "f-title") { draft.title = e.target.value; $("#f-submit").disabled = !draft.title.trim(); }
+  if (id === "f-title") draft.title = e.target.value;
   if (id === "f-note") draft.note = e.target.value;
+  if (id === "f-title" || id === "f-note") $("#f-submit").disabled = !(draft.title.trim() || (draft.note || "").trim());
   if (id === "n-title") draft.title = e.target.value;
   if (id === "n-body") draft.body = e.target.value;
 });
@@ -1120,9 +1123,11 @@ sheet.addEventListener("click", e => {
 });
 sheet.addEventListener("submit", async e => {
   e.preventDefault(); if (mode !== "task") return;
-  const title = draft.title.trim(); if (!title) return;
+  let title = draft.title.trim(), note = (draft.note || "").trim();
+  if (!title && note) { title = note; note = ""; }
+  if (!title) return;
   $("#f-submit").classList.add("is-loading");
-  const fields = { title, note: (draft.note || "").trim(), day: draft.day, time: draft.day ? draft.time || "" : "", dur: draft.dur || 30, list: draft.list, remind: draft.time ? draft.remind : null };
+  const fields = { title, note, day: draft.day, time: draft.day ? draft.time || "" : "", dur: draft.dur || 30, list: draft.list, remind: draft.time ? draft.remind : null };
   const isNew = !draft.id;
   if (isNew) S.tasks.push({ id: uid(), ...fields, done: false, doneAt: null, reminded: false, created: Date.now() });
   else { const t = find(draft.id); const changedTime = t.time !== fields.time || t.day !== fields.day || t.remind !== fields.remind; Object.assign(t, fields); if (changedTime) { t.reminded = false; t.snooze = null; } }
