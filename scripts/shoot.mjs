@@ -47,6 +47,8 @@ async function shot(name, dev, scheme, st, act, full = false) {
   page.on("console", m => { if (m.type() === "error") console.log("CONSOLE", name, m.text()); });
   await page.addInitScript(s => { if (s) localStorage.setItem("maham.v1", JSON.stringify(s)); }, st);
   await page.goto(url, { waitUntil: "networkidle" });
+  // Preview only: load the locally installed Thmanyah files (not shipped with the app)
+  if (process.env.FONTS_CSS) await page.addStyleTag({ content: (await import("node:fs")).readFileSync(process.env.FONTS_CSS, "utf8") });
   await page.evaluate(() => document.fonts.ready);
   if (act) await act(page);
   await page.waitForTimeout(700);
