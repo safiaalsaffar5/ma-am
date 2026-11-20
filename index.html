@@ -678,7 +678,7 @@ h1, h2, h3 { text-wrap: balance; font-weight: var(--w-bold); }
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         مهمة جديدة
       </button>
-      <p class="kbd-hint">أو اضغطي <kbd>N</kbd> من أي مكان</p>
+      <p class="kbd-hint">اختصار: <kbd>N</kbd></p>
     </div>
   </aside>
 
@@ -839,7 +839,7 @@ function plural(n, one, two, few, many) {
 }
 const tasksWord = n => plural(n, "مهمة وحدة", "مهمتين", "مهام", "مهمة");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const TAGS = { work: "عمل", home: "بيت", self: "لي" };
+const TAGS = { work: "عمل", home: "بيت", self: "شخصي" };
 
 const $ = s => document.querySelector(s);
 const onbEl = $("#onb");
@@ -904,7 +904,7 @@ function render() {
   } else {
     $("#progress").hidden = true;
     $("#greet").textContent = view === "upcoming" ? "القادم" : "الإعدادات";
-    $("#summary").textContent = view === "upcoming" ? (up ? `${tasksWord(up)} تنتظرك بعدين` : "ولا شيء ينتظرك") : "خليه على ذوقك";
+    $("#summary").textContent = view === "upcoming" ? (up ? `${tasksWord(up)} قادمة` : "ما فيه مهام قادمة") : "";
   }
 
   const counts = { today: open.length, upcoming: up };
@@ -923,14 +923,14 @@ function updateProgress(open, doneToday) {
   $("#progress").hidden = total === 0;
   if (!total) return;
   $("#sadu").innerHTML = starsHTML(total, doneToday.length);
-  $("#sadu").setAttribute("aria-label", `خلصتي ${N(doneToday.length)} من ${N(total)}`);
-  $("#progLeft").innerHTML = `جمعتي <b>${N(doneToday.length)}</b> من ${N(total)} نجمة`;
+  $("#sadu").setAttribute("aria-label", `تم ${N(doneToday.length)} من ${N(total)}`);
+  $("#progLeft").innerHTML = `تم <b>${N(doneToday.length)}</b> من ${N(total)}`;
   const pct = Math.round(doneToday.length / total * 100);
-  $("#progRight").textContent = doneToday.length === total ? "يوم كامل النجوم" : digits() === "arab" ? `${N(pct)}٪` : `${pct}%`;
+  $("#progRight").textContent = doneToday.length === total ? "اكتمل اليوم" : digits() === "arab" ? `${N(pct)}٪` : `${pct}%`;
 }
 function summaryLine(open, done) {
-  if (!open.length && !done.length) return "صفحة بيضاء، وكل الوقت لك";
-  if (!open.length) return "خلصتي كل شيء. يومك لك الحين";
+  if (!open.length && !done.length) return "ما فيه مهام اليوم";
+  if (!open.length) return "اكتملت مهام اليوم";
   const timed = open.filter(x => x.time).sort(sortTasks)[0];
   const base = `باقي ${tasksWord(open.length)}`;
   return timed ? `${base}، أقربها ${fmtTime(timed.time)}` : `${base} اليوم`;
@@ -973,7 +973,7 @@ function renderToday(open, doneToday) {
   const el = $("#view-today");
   const sorted = [...open].sort(sortTasks);
   if (!open.length && !doneToday.length) {
-    el.innerHTML = `<div class="empty">${emptyArt()}<h2 class="empty__title">ما عندك شيء اليوم، استمتعي</h2><p class="empty__text">إذا جاك شيء في بالك، اكتبيه هنا وانسيه.</p><button type="button" class="btn btn--primary" data-act="add">${I.plus}أضيفي مهمة</button></div>`;
+    el.innerHTML = `<div class="empty">${emptyArt()}<h2 class="empty__title">ما عندك شيء اليوم، استمتعي</h2><p class="empty__text">المهام اللي تضيفينها لليوم تظهر هنا.</p><button type="button" class="btn btn--primary" data-act="add">${I.plus}إضافة مهمة</button></div>`;
     return;
   }
   let html = "";
@@ -993,16 +993,16 @@ function renderToday(open, doneToday) {
         ${focus.tag ? `<span class="focus__pill"><i class="gem"></i>${TAGS[focus.tag]}</span>` : ""}
       </div>` : ""}
       <div class="focus__actions">
-        <button type="button" class="btn" data-act="toggle">${I.checkBtn}خلصتها</button>
-        <button type="button" class="btn btn--line" data-act="timer" aria-label="${isT && timer.running ? "وقّفي المؤقت" : "ابدئي جلسة ٢٥ دقيقة"}">${isT && timer.running ? I.pause : I.play}<span class="timer" id="timerText">${isT && (timer.running || timer.left < 1500) ? `${mm}:${ss}` : `جلسة ${N(25)} د`}</span></button>
+        <button type="button" class="btn" data-act="toggle">${I.checkBtn}تم</button>
+        <button type="button" class="btn btn--line" data-act="timer" aria-label="${isT && timer.running ? "وقّفي المؤقت" : "ابدئي جلسة ٢٥ دقيقة"}">${isT && timer.running ? I.pause : I.play}<span class="timer" id="timerText">${isT && (timer.running || timer.left < 1500) ? `${mm}:${ss}` : `مؤقت ${N(25)} د`}</span></button>
       </div>
     </article>`;
   } else if (sorted.length) {
     html += `<article class="focus" aria-label="مهمة التركيز">
       <span class="focus__label"><i class="gem"></i>مهمة التركيز</span>
-      <h2 class="focus__title">وش أهم شيء اليوم؟</h2>
-      <p>اختاري مهمة وحدة تبدين فيها، والباقي يجي بعدها.</p>
-      <div class="focus__actions"><button type="button" class="btn" data-act="autofocus">اختاري لي</button></div>
+      <h2 class="focus__title">ما فيه مهمة تركيز</h2>
+      <p>مهمة التركيز تظهر أعلى صفحة اليوم.</p>
+      <div class="focus__actions"><button type="button" class="btn" data-act="autofocus">اختيار أقرب مهمة</button></div>
     </article>`;
   }
   const rest = sorted.filter(x => !focus || x.id !== focus.id);
@@ -1010,12 +1010,12 @@ function renderToday(open, doneToday) {
   const late = rest.filter(x => x.day < tk);
   const timed = rest.filter(x => x.day === tk && x.time);
   const anytime = rest.filter(x => x.day === tk && !x.time);
-  if (late.length) html += group("من قبل", late, { note: "ما عليه، صارت لليوم" });
-  if (timed.length) html += group("بمواعيد", timed, { timeline: true });
-  if (anytime.length) html += group("أي وقت اليوم", anytime);
-  if (!rest.length && focus) html += `<p class="note-line">ما فيه غيرها. خلصيها وارتاحي</p>`;
+  if (late.length) html += group("من قبل", late, { note: "انتقلت لليوم" });
+  if (timed.length) html += group("بوقت محدد", timed, { timeline: true });
+  if (anytime.length) html += group("بدون وقت", anytime);
+  if (!rest.length && focus) html += `<p class="note-line">ما فيه مهام ثانية اليوم</p>`;
   if (doneToday.length) {
-    html += `<div class="group"><button type="button" class="disclosure" data-act="showdone" aria-expanded="${showDone}">${I.chev}<span>خلصتي ${tasksWord(doneToday.length)}</span><span class="stars stars--sm" aria-hidden="true">${starsHTML(doneToday.length, doneToday.length, { max: 8 })}</span></button>
+    html += `<div class="group"><button type="button" class="disclosure" data-act="showdone" aria-expanded="${showDone}">${I.chev}<span>المنجزة (${N(doneToday.length)})</span><span class="stars stars--sm" aria-hidden="true">${starsHTML(doneToday.length, doneToday.length, { max: 8 })}</span></button>
     ${showDone ? `<ul class="list">${doneToday.sort((a, b) => b.doneAt - a.doneAt).map(t => taskRow(t)).join("")}</ul>` : ""}</div>`;
   }
   el.innerHTML = html;
@@ -1027,7 +1027,7 @@ function renderUpcoming() {
   const up = S.tasks.filter(x => !x.done && x.day && x.day > tk).sort((a, b) => a.day.localeCompare(b.day) || sortTasks(a, b));
   const some = S.tasks.filter(x => !x.done && !x.day).sort(sortTasks);
   if (!up.length && !some.length) {
-    el.innerHTML = `<div class="empty">${emptyArt()}<h2 class="empty__title">الأيام الجاية فاضية</h2><p class="empty__text">مساحة حلوة للراحة. وإذا تذكرتي شيء، حطيه هنا.</p><button type="button" class="btn btn--primary" data-act="add" data-day="tomorrow">${I.plus}خططي لبكرة</button></div>`;
+    el.innerHTML = `<div class="empty">${emptyArt()}<h2 class="empty__title">الأيام الجاية فاضية</h2><p class="empty__text">المهام اللي موعدها بعد اليوم تظهر هنا.</p><button type="button" class="btn btn--primary" data-act="add" data-day="tomorrow">${I.plus}إضافة مهمة لبكرة</button></div>`;
     return;
   }
   const byDay = new Map();
@@ -1037,7 +1037,7 @@ function renderUpcoming() {
     const near = Math.round((dateOf(k) - dateOf(tk)) / 864e5) < 7;
     html += group(dayLabel(k), items, { note: near ? fmtDate(k, { day: "numeric", month: "long" }) : "" });
   }
-  if (some.length) html += group("بدون موعد", some, { note: "متى ما فضيتي" });
+  if (some.length) html += group("بدون موعد", some);
   el.innerHTML = html;
 }
 
@@ -1048,20 +1048,20 @@ function renderPrefs() {
   const seg = (name, val, opts) => `<div class="seg" role="radiogroup" aria-label="${name}">${opts.map(([v, l]) => `<button type="button" role="radio" aria-checked="${val === v}" data-set="${name}" data-val="${v}">${l}</button>`).join("")}</div>`;
   el.innerHTML = `
   <div class="group"><div class="group__head"><h3 class="group__title">الشكل</h3></div>
-    <div class="setting"><div class="setting__row"><span class="setting__title">المظهر</span><span class="setting__hint">تلقائي يمشي مع جهازك</span></div>${seg("theme", S.settings.theme, [["auto", "تلقائي"], ["light", "نهاري"], ["dark", "ليلي"]])}</div>
-    <div class="setting"><div class="setting__row"><span class="setting__title">الأرقام</span><span class="setting__hint">تتغير في كل مكان</span></div>${seg("digits", S.settings.digits, [["arab", "عربية ١٢٣"], ["latn", "إنجليزية 123"]])}</div>
+    <div class="setting"><div class="setting__row"><span class="setting__title">المظهر</span><span class="setting__hint">التلقائي يتبع إعداد الجهاز</span></div>${seg("theme", S.settings.theme, [["auto", "تلقائي"], ["light", "نهاري"], ["dark", "ليلي"]])}</div>
+    <div class="setting"><div class="setting__row"><span class="setting__title">الأرقام</span><span class="setting__hint">في كل التطبيق</span></div>${seg("digits", S.settings.digits, [["arab", "عربية ١٢٣"], ["latn", "إنجليزية 123"]])}</div>
   </div>
   <div class="group"><div class="group__head"><h3 class="group__title">مهامك</h3></div>
-    <button type="button" class="row-btn" data-act="clear-done" ${doneCount ? "" : "disabled"}><span class="row-btn__icon">${I.broom}</span><span class="row-btn__text"><span class="setting__title">امسحي اللي خلصتيه</span><span class="setting__hint">${doneCount ? tasksWord(doneCount) + " منجزة" : "ما فيه شيء منجز للحين"}</span></span></button>
-    ${confirmKind === "clear-done" ? confirmRow("تنمسح " + tasksWord(doneCount) + " للأبد.", "clear-done") : ""}
-    <button type="button" class="row-btn" data-act="replay"><span class="row-btn__icon">${I.replay}</span><span class="row-btn__text"><span class="setting__title">شاشة الترحيب</span><span class="setting__hint">شوفيها مرة ثانية</span></span></button>
-    <button type="button" class="row-btn row-btn--danger" data-act="reset" ${S.tasks.length ? "" : "disabled"}><span class="row-btn__icon">${I.trash}</span><span class="row-btn__text"><span class="setting__title">ابدئي من جديد</span><span class="setting__hint">تنحذف كل المهام</span></span></button>
-    ${confirmKind === "reset" ? confirmRow("متأكدة؟ ما نقدر نرجعها بعدين.", "reset") : ""}
+    <button type="button" class="row-btn" data-act="clear-done" ${doneCount ? "" : "disabled"}><span class="row-btn__icon">${I.broom}</span><span class="row-btn__text"><span class="setting__title">حذف المهام المنجزة</span><span class="setting__hint">${doneCount ? tasksWord(doneCount) + " منجزة" : "ما فيه مهام منجزة"}</span></span></button>
+    ${confirmKind === "clear-done" ? confirmRow("بتنحذف " + tasksWord(doneCount) + " منجزة.", "clear-done") : ""}
+    <button type="button" class="row-btn" data-act="replay"><span class="row-btn__icon">${I.replay}</span><span class="row-btn__text"><span class="setting__title">شاشة الترحيب</span><span class="setting__hint">عرضها مرة ثانية</span></span></button>
+    <button type="button" class="row-btn row-btn--danger" data-act="reset" ${S.tasks.length ? "" : "disabled"}><span class="row-btn__icon">${I.trash}</span><span class="row-btn__text"><span class="setting__title">حذف كل المهام</span><span class="setting__hint">ما يمكن التراجع عنه</span></span></button>
+    ${confirmKind === "reset" ? confirmRow("بتنحذف كل المهام ولا يمكن استرجاعها.", "reset") : ""}
   </div>
-  <div class="about"><img src="${ICON_URI}" alt="أيقونة مهام"><div><p class="display">مهام</p><p class="num">يوم أخف، مهمة وحدة كل مرة · الإصدار ${digits() === "arab" ? "٢٫٠" : "2.0"}</p></div></div>`;
+  <div class="about"><img src="${ICON_URI}" alt="أيقونة مهام"><div><p class="display">مهام</p><p class="num">الإصدار ${digits() === "arab" ? "٢٫٠" : "2.0"}</p></div></div>`;
 }
 function confirmRow(text, kind) {
-  return `<div class="confirm" role="alert"><p>${esc(text)}</p><div class="confirm__actions"><button type="button" class="btn btn--ghost btn--sm" data-act="cancel-confirm">لا، خليها</button><button type="button" class="btn btn--primary btn--sm" data-act="do-${kind}">امسحي</button></div></div>`;
+  return `<div class="confirm" role="alert"><p>${esc(text)}</p><div class="confirm__actions"><button type="button" class="btn btn--ghost btn--sm" data-act="cancel-confirm">إلغاء</button><button type="button" class="btn btn--primary btn--sm" data-act="do-${kind}">حذف</button></div></div>`;
 }
 
 function renderPanel() {
@@ -1077,8 +1077,8 @@ function renderPanel() {
     rows += `<button type="button" class="wday" data-view="${i === 0 ? "today" : "upcoming"}"><span class="wday__name"><b>${i === 0 ? '<i class="gem"></i>' : ""}${esc(name)}</b><small class="num">${esc(fmtDate(k, { day: "numeric", month: "long" }))}</small></span><span class="wday__load"><span class="stars stars--sm" aria-hidden="true">${total ? starsHTML(total, doneN, { max: 10, soft: i === 0 ? 0 : total }) : "<i></i>"}</span><span class="wday__n num">${total ? N(total) : "–"}</span></span></button>`;
   }
   const next = S.tasks.filter(x => !x.done && x.day && x.day > tk).sort((a, b) => a.day.localeCompare(b.day) || sortTasks(a, b)).slice(0, 3);
-  el.innerHTML = `<div class="panel__block"><div class="group__head"><h3 class="group__title">أسبوعك</h3><span class="group__aside">كل نجمة مهمة</span></div>${rows}</div>
-  ${next.length ? `<div class="panel__block"><div class="group__head"><h3 class="group__title">الجاي بعد اليوم</h3></div>${next.map(t => `<div class="next__item"><span>${esc(t.title)}</span><span class="num">${esc(dayLabel(t.day))}${t.time ? " · " + esc(fmtTime(t.time)) : ""}</span></div>`).join("")}</div>` : ""}`;
+  el.innerHTML = `<div class="panel__block"><div class="group__head"><h3 class="group__title">أسبوعك</h3></div>${rows}</div>
+  ${next.length ? `<div class="panel__block"><div class="group__head"><h3 class="group__title">القادم</h3></div>${next.map(t => `<div class="next__item"><span>${esc(t.title)}</span><span class="num">${esc(dayLabel(t.day))}${t.time ? " · " + esc(fmtTime(t.time)) : ""}</span></div>`).join("")}</div>` : ""}`;
 }
 
 /* ================= Actions ================= */
@@ -1096,7 +1096,7 @@ function toggle(id, rowEl) {
     if (view === "today") { updateProgress(open, doneToday); $("#summary").textContent = summaryLine(open, doneToday); }
     setTimeout(() => { rowEl.classList.add("is-leaving"); setTimeout(render, 240); }, 420);
   } else render();
-  if (t.done) toast("نجمة جديدة لك", () => { t.done = false; t.doneAt = null; persist(); render(); });
+  if (t.done) toast("تمت المهمة", () => { t.done = false; t.doneAt = null; persist(); render(); });
 }
 function setFocus(id) { for (const t of S.tasks) t.focus = t.id === id; persist(); render(); }
 function swapFocus() {
@@ -1113,7 +1113,7 @@ function tick() {
   timer.left = Math.max(0, Math.round((timer.end - Date.now()) / 1000));
   const el = $("#timerText");
   if (el) el.textContent = `${N(pad(Math.floor(timer.left / 60)))}:${N(pad(timer.left % 60))}`;
-  if (timer.left === 0) { stopTimer(false); toast("خلصت الجلسة. خذي نفس"); render(); }
+  if (timer.left === 0) { stopTimer(false); toast("انتهى المؤقت"); render(); }
 }
 function toggleTimer(id) {
   if (timer.id !== id) timer = { id, left: 25 * 60, running: false, end: 0, int: null };
@@ -1162,21 +1162,21 @@ function renderSheet() {
     <div class="grabber" aria-hidden="true"></div>
     <div class="sheet__head"><h2 class="sheet__title" id="sheetTitle"><i class="gem"></i>${d.id ? "تعديل المهمة" : "مهمة جديدة"}</h2><button type="button" class="icon-btn" data-act="close" aria-label="إغلاق">${I.close}</button></div>
     <div class="sheet__inputs">
-      <label class="sr" for="f-title">وش المهمة؟</label>
-      <input class="field-bare t-title" id="f-title" maxlength="140" placeholder="وش تبين تسوين؟" value="${esc(d.title)}" enterkeyhint="done">
+      <label class="sr" for="f-title">اسم المهمة</label>
+      <input class="field-bare t-title" id="f-title" maxlength="140" placeholder="اسم المهمة" value="${esc(d.title)}" enterkeyhint="done">
       <label class="sr" for="f-note">ملاحظة</label>
-      <input class="field-bare t-note" id="f-note" maxlength="140" placeholder="ملاحظة صغيرة (اختياري)" value="${esc(d.note || "")}">
+      <input class="field-bare t-note" id="f-note" maxlength="140" placeholder="ملاحظة (اختياري)" value="${esc(d.note || "")}">
     </div>
-    <div class="sheet__section"><span class="label" id="l-day">متى؟</span>
+    <div class="sheet__section"><span class="label" id="l-day">الموعد</span>
       <div class="chips" role="group" aria-labelledby="l-day">
         ${dayChip(tk, "اليوم")}${dayChip(tm, "بكرة")}
-        <span class="chip" aria-pressed="${customDay}">${I.calSm}<span>${customDay ? esc(dayLabel(d.day)) : "يوم ثاني"}</span><input type="date" id="f-date" aria-label="اختاري يوم" min="${tk}" value="${customDay ? d.day : ""}"></span>
+        <span class="chip" aria-pressed="${customDay}">${I.calSm}<span>${customDay ? esc(dayLabel(d.day)) : "تاريخ آخر"}</span><input type="date" id="f-date" aria-label="اختاري يوم" min="${tk}" value="${customDay ? d.day : ""}"></span>
         <button type="button" class="chip" aria-pressed="${!d.day}" data-day="">بدون موعد</button>
       </div></div>
     <div class="sheet__row">
-      <div class="sheet__section"><span class="label" id="l-time">الساعة</span>
+      <div class="sheet__section"><span class="label" id="l-time">الوقت</span>
         <div class="chips" role="group" aria-labelledby="l-time">
-          <span class="chip" aria-pressed="${!!d.time}">${I.clockSm}<span class="num">${d.time ? esc(fmtTime(d.time)) : "أي وقت"}</span><input type="time" id="f-time" aria-label="اختاري الوقت" value="${d.time || ""}"></span>
+          <span class="chip" aria-pressed="${!!d.time}">${I.clockSm}<span class="num">${d.time ? esc(fmtTime(d.time)) : "بدون وقت"}</span><input type="time" id="f-time" aria-label="اختاري الوقت" value="${d.time || ""}"></span>
           ${d.time ? `<button type="button" class="icon-btn icon-btn--sm" data-act="clear-time" aria-label="بدون وقت">${I.close}</button>` : ""}
         </div></div>
       <div class="sheet__section"><span class="label" id="l-tag">التصنيف</span>
@@ -1184,10 +1184,10 @@ function renderSheet() {
           ${Object.entries(TAGS).map(([k, l]) => `<button type="button" class="chip" aria-pressed="${d.tag === k}" data-tag="${k}"><i class="gem t-${k}"></i>${l}</button>`).join("")}
         </div></div>
     </div>
-    ${d.day && d.day <= tk ? `<button type="button" class="toggle-row" role="switch" aria-checked="${!!d.focus}" data-act="focus-toggle"><span class="toggle-row__text"><b><i class="gem"></i>خليها مهمة التركيز</b><span>تطلع لك أول شيء في يومك</span></span><span class="switch" aria-hidden="true"></span></button>` : ""}
+    ${d.day && d.day <= tk ? `<button type="button" class="toggle-row" role="switch" aria-checked="${!!d.focus}" data-act="focus-toggle"><span class="toggle-row__text"><b><i class="gem"></i>مهمة التركيز</b><span>تظهر أعلى صفحة اليوم</span></span><span class="switch" aria-hidden="true"></span></button>` : ""}
     <div class="sheet__foot">
-      ${d.id ? `<button type="button" class="btn btn--danger" data-act="delete">${I.trash}احذفي</button>` : ""}
-      <button type="submit" class="btn btn--primary" id="f-submit" ${d.title.trim() ? "" : "disabled"}>${d.id ? "احفظي" : "أضيفي المهمة"}</button>
+      ${d.id ? `<button type="button" class="btn btn--danger" data-act="delete">${I.trash}حذف</button>` : ""}
+      <button type="submit" class="btn btn--primary" id="f-submit" ${d.title.trim() ? "" : "disabled"}>${d.id ? "حفظ" : "إضافة"}</button>
     </div>`;
 }
 sheet.addEventListener("input", e => {
@@ -1265,8 +1265,8 @@ document.addEventListener("click", e => {
   else if (a === "showdone") { showDone = !showDone; render(); }
   else if (a === "clear-done" || a === "reset") { confirmKind = confirmKind === a ? null : a; render(); }
   else if (a === "cancel-confirm") { confirmKind = null; render(); }
-  else if (a === "do-clear-done") { const n = S.tasks.filter(x => x.done).length; S.tasks = S.tasks.filter(x => !x.done); confirmKind = null; persist(); render(); toast(`انمسحت ${tasksWord(n)}`); }
-  else if (a === "do-reset") { S.tasks = []; confirmKind = null; persist(); render(); toast("صفحة جديدة"); }
+  else if (a === "do-clear-done") { const n = S.tasks.filter(x => x.done).length; S.tasks = S.tasks.filter(x => !x.done); confirmKind = null; persist(); render(); toast(`انحذفت ${tasksWord(n)}`); }
+  else if (a === "do-reset") { S.tasks = []; confirmKind = null; persist(); render(); toast("انحذفت كل المهام"); }
   else if (a === "replay") openOnboarding();
 });
 function quickAdd() { openSheet(null, { day: view === "upcoming" ? tomorrowKey() : todayKey() }); }
@@ -1276,11 +1276,11 @@ $("#sideAdd").addEventListener("click", quickAdd);
 /* ================= Onboarding ================= */
 let slide = 0;
 const SLIDES = [
-  { tone: "cherry", title: "يومك، بس أحلى", text: "اكتبي اللي في بالك أول ما يجي، وخلي راسك فاضي للأشياء الحلوة.",
+  { tone: "cherry", title: "مهام يومك في مكان واحد", text: "اكتبي المهمة، وحددي يومها ووقتها إذا تحتاجين.",
     art: () => `<div style="display:grid;justify-items:center"><img class="art-icon" src="${ICON_URI}" alt=""></div>` },
-  { tone: "pink", title: "مهمة وحدة تستاهل تركيزك", text: "كل يوم تختارين مهمة وحدة تبدين فيها. الباقي يستنى دوره بهدوء.",
+  { tone: "pink", title: "ابدئي بمهمة وحدة", text: "حددي مهمة التركيز، وتظهر أعلى صفحة اليوم.",
     art: () => `<div class="mini"><div class="mini__focus"><i class="gem"></i><b style="width:72%"></b><small></small></div><div class="mini__row"><i></i><b style="width:58%"></b></div><div class="mini__row"><i></i><b style="width:40%"></b></div></div>` },
-  { tone: "paper", title: "كل مهمة نجمة", text: "تلمع النجمة لما تخلصينها. واللي ما لحقتي عليه ينتقل لبكرة بدون لوم.",
+  { tone: "paper", title: "كل مهمة نجمة", text: "النجمة تتلوّن لما تنتهي المهمة. والمهام اللي ما انتهت تنتقل لليوم التالي.",
     art: () => `<div class="big-stars"><span class="big-stars__n num">${N(6)} <span>من ${N(8)}</span></span><div class="stars" aria-hidden="true">${starsHTML(8, 6)}</div></div>` },
 ];
 function openOnboarding() { slide = 0; onbEl.hidden = false; onbEl.classList.remove("is-leaving"); renderOnb(); }
@@ -1297,7 +1297,7 @@ function onbChrome() {
   return {
     top: `<span class="onb__brand">مهام</span>${last ? `<button type="button" class="btn btn--ghost btn--sm" data-o="back">رجوع</button>` : `<button type="button" class="btn btn--ghost btn--sm" data-o="skip">تخطي</button>`}`,
     foot: `${last ? "" : `<div class="dots" aria-hidden="true">${SLIDES.map((_, i) => `<span class="${i === slide ? "on" : ""}"></span>`).join("")}</div>`}
-      ${last ? `<button type="submit" form="firstForm" class="btn btn--primary btn--block" id="firstBtn" ${filled ? "" : "disabled"}>أضيفيها وابدئي</button>` : `<button type="button" class="btn btn--primary btn--block" data-o="next">${slide === SLIDES.length - 1 ? "يلا نبدأ" : "التالي"}</button>`}`,
+      ${last ? `<button type="submit" form="firstForm" class="btn btn--primary btn--block" id="firstBtn" ${filled ? "" : "disabled"}>إضافة</button>` : `<button type="button" class="btn btn--primary btn--block" data-o="next">${slide === SLIDES.length - 1 ? "ابدئي" : "التالي"}</button>`}`,
   };
 }
 function renderOnb() {
@@ -1308,9 +1308,9 @@ function renderOnb() {
       ${SLIDES.map((s, i) => `<section class="slide ${i < slide ? "is-before" : ""}" aria-hidden="${i !== slide}"><div class="slide__art">${s.art()}</div><div class="slide__copy"><h2 class="slide__title">${s.title}</h2><p class="slide__text">${s.text}</p></div></section>`).join("")}
       <section class="slide" aria-hidden="${!last}"><form class="first" id="firstForm" autocomplete="off">
         <img class="first__icon" src="${ICON_URI}" alt="">
-        <div class="slide__copy" style="justify-self:center"><h2 class="slide__title">نبدأ بأول مهمة؟</h2><p class="slide__text">شيء صغير تقدرين تخلصينه اليوم.</p></div>
-        <div class="onb__form"><label class="sr" for="firstInput">أول مهمة</label><input class="field" id="firstInput" maxlength="140" placeholder="مثلاً: أرد على رسالة أمي" enterkeyhint="done">
-        <div class="chips">${["أمشي ٢٠ دقيقة", "أرتب مكتبي", "أشرب مويه"].map(s => `<button type="button" class="chip" data-o="suggest">${N(s)}</button>`).join("")}</div></div>
+        <div class="slide__copy" style="justify-self:center"><h2 class="slide__title">أضيفي أول مهمة</h2><p class="slide__text">تقدرين تعدلينها بعدين.</p></div>
+        <div class="onb__form"><label class="sr" for="firstInput">أول مهمة</label><input class="field" id="firstInput" maxlength="140" placeholder="مثلاً: إرسال التقرير" enterkeyhint="done">
+        <div class="chips">${["الرد على الإيميلات", "حجز موعد", "أغراض البيت"].map(s => `<button type="button" class="chip" data-o="suggest">${N(s)}</button>`).join("")}</div></div>
       </form></section>
     </div>
     <div class="onb__foot"></div>`;
@@ -1342,7 +1342,7 @@ onbEl.addEventListener("submit", e => {
   S.tasks.push({ id: uid(), title: v, note: "", day: todayKey(), time: "", tag: null, done: false, doneAt: null, focus: true, created: Date.now() });
   view = "today";
   closeOnboarding();
-  toast("بداية حلوة");
+  toast("انضافت المهمة");
 });
 let tsx = null;
 onbEl.addEventListener("touchstart", e => { tsx = e.touches[0].clientX; }, { passive: true });
