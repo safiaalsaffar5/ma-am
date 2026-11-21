@@ -249,8 +249,8 @@ button.stat:active { transform: scale(0.98); }
 .blk { position: absolute; top: 8px; bottom: 8px; min-width: 8px; border-radius: 5px; background: var(--c); box-shadow: 0 1px 2px color-mix(in srgb, var(--c) 40%, transparent); transition: transform var(--t-base) var(--ease-spring), filter var(--t-fast); }
 .blk:hover { filter: brightness(0.97); transform: translateY(-1px); }
 .blk.is-done { opacity: 0.28; }
-.now { position: absolute; top: -6px; bottom: -6px; width: 2px; background: var(--accent); border-radius: 1px; pointer-events: none; }
-.now::before { content: ""; position: absolute; top: -4px; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--surface); }
+.nowline { position: absolute; top: -6px; bottom: -6px; width: 2px; background: var(--accent); border-radius: 1px; pointer-events: none; }
+.nowline::before { content: ""; position: absolute; top: -4px; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--surface); }
 .ribbon__hours { display: flex; justify-content: space-between; font-size: 11px; line-height: 1; color: var(--text-3); padding-inline: 0; }
 .ribbon__hours span { width: 0; display: flex; justify-content: center; white-space: nowrap; }
 
@@ -381,6 +381,8 @@ button.stat:active { transform: scale(0.98); }
 .banner__actions { grid-column: 1 / -1; display: flex; gap: var(--s-2); }
 .banner__actions .btn { flex: 1; }
 
+
+
 /* ================= Settings ================= */
 .card { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh-sm); }
 .setting { display: grid; gap: var(--s-3); padding: var(--s-4); }
@@ -509,6 +511,101 @@ button.stat:active { transform: scale(0.98); }
 .art-banner { width: 320px; display: grid; gap: 12px; }
 .art-banner .banner { position: static; transform: none; width: 100%; }
 
+
+/* ================= Now card (today hero) ================= */
+.now {
+  position: relative; overflow: hidden; isolation: isolate;
+  border-radius: 24px; padding: var(--s-5) var(--s-5) var(--s-4); color: #fff; display: grid; gap: 6px;
+  background:
+    radial-gradient(circle at var(--sun-x, 70%) -10%, var(--sun, rgb(255 214 150 / 0.45)) 0, transparent 46%),
+    linear-gradient(160deg, var(--sky1), var(--sky2) 58%, var(--sky3));
+  box-shadow: 0 18px 40px -18px color-mix(in srgb, var(--sky2) 70%, transparent), var(--sh-sm);
+}
+.now::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: 0.12; mix-blend-mode: overlay; pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+.now__top { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+.now__date { font-size: var(--fs-14); color: rgb(255 255 255 / 0.8); }
+.now__plan { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding-inline: var(--s-3); border-radius: var(--r-pill); background: rgb(255 255 255 / 0.14); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18); font-size: var(--fs-14); font-weight: var(--w-bold); color: #fff; transition: background-color var(--t-fast), transform var(--t-base) var(--ease-spring); }
+.now__plan:hover { background: rgb(255 255 255 / 0.22); }
+.now__plan:active { transform: scale(0.96); }
+.now__plan:focus-visible { box-shadow: 0 0 0 2px #fff; }
+.now__label { display: flex; align-items: center; gap: 8px; margin-top: var(--s-3); font-size: var(--fs-12); font-weight: var(--w-bold); color: rgb(255 255 255 / 0.78); }
+.now__label i { width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 0 rgb(255 255 255 / 0.6); }
+.now__label.is-live i { background: #7CFFB2; animation: pulse 1.8s var(--ease-out) infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgb(124 255 178 / 0.6); } 100% { box-shadow: 0 0 0 10px rgb(124 255 178 / 0); } }
+.now__title { font-family: var(--font-display); font-weight: var(--w-bold); font-size: var(--fs-31); line-height: 1.25; overflow-wrap: anywhere; }
+.now__meta { font-size: var(--fs-14); color: rgb(255 255 255 / 0.82); }
+.now .ribbon__track { margin-top: var(--s-4); height: 44px; border-radius: 10px;
+  background: repeating-linear-gradient(to left, rgb(255 255 255 / 0.14) 0 1px, transparent 1px calc(100% / 6)), rgb(255 255 255 / 0.07); }
+.now .ribbon__track::before { background: rgb(255 255 255 / 0.14); }
+.now .ribbon__track::after { background: linear-gradient(to left, transparent, rgb(0 0 0 / 0.16)); }
+.now .blk { background: color-mix(in srgb, var(--c) 30%, #fff); box-shadow: inset 0 -3px 0 0 var(--c), 0 2px 8px rgb(0 0 0 / 0.18); top: 7px; bottom: 7px; }
+.now .blk.is-done { opacity: 0.35; }
+.now .nowline { background: #fff; }
+.now .nowline::before { background: #fff; box-shadow: 0 0 0 3px rgb(255 255 255 / 0.25); }
+.now .ribbon__hours { color: rgb(255 255 255 / 0.62); margin-top: 6px; }
+.now__stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-2); margin-top: var(--s-3); padding-top: var(--s-3); border-top: 1px solid rgb(255 255 255 / 0.14); }
+.now__stat { display: grid; gap: 2px; text-align: start; color: #fff; border-radius: var(--r-sm); }
+.now__stat b { font-family: var(--font-display); font-weight: var(--w-bold); font-size: var(--fs-25); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.now__stat b small { font-family: var(--font-ui); font-size: var(--fs-12); font-weight: var(--w-regular); color: rgb(255 255 255 / 0.66); margin-inline-start: 2px; }
+.now__stat span { font-size: var(--fs-12); color: rgb(255 255 255 / 0.74); display: flex; align-items: center; gap: 5px; }
+.now__bar { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: rgb(255 255 255 / 0.16); overflow: hidden; margin-top: 4px; }
+.now__bar i { display: block; height: 100%; width: var(--p); background: #fff; border-radius: 2px; transition: width var(--t-slow) var(--ease-out); }
+
+/* ================= Quick add (natural language) ================= */
+.qa { position: relative; display: grid; gap: var(--s-2); }
+.qa__field { position: relative; }
+.qa__field svg { position: absolute; top: 50%; transform: translateY(-50%); inset-inline-start: 16px; color: var(--accent); pointer-events: none; }
+.qa input { display: block; width: 100%; height: 52px; padding-inline: 48px 16px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-sm); font-size: var(--fs-16); transition: border-color var(--t-fast), box-shadow var(--t-fast); }
+.qa input::placeholder { color: var(--text-3); }
+.qa input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent); }
+.toks { display: flex; flex-wrap: wrap; gap: 6px; }
+.toks:empty { display: none; }
+.tok { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding-inline: 8px; border-radius: 7px; background: var(--accent-soft); color: var(--accent-text); font-size: var(--fs-12); font-weight: var(--w-bold); animation: tokIn 260ms var(--ease-spring) both; }
+.tok--remind { background: var(--remind-soft); color: var(--remind-text); }
+.tok--list { background: color-mix(in srgb, var(--c) 14%, transparent); color: var(--text); }
+.tok--hint { background: transparent; color: var(--text-3); font-weight: var(--w-regular); padding: 0; animation: none; }
+@keyframes tokIn { from { opacity: 0; transform: translateY(4px) scale(0.92); } to { opacity: 1; transform: none; } }
+
+/* ================= Top 3 ================= */
+.top3 { display: grid; gap: var(--s-2); }
+.top { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-4); background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh-sm); }
+.top__n { font-family: var(--font-display); font-weight: var(--w-bold); font-size: var(--fs-31); line-height: 1; color: var(--accent); text-align: center; font-variant-numeric: tabular-nums; }
+.top.is-done .top__n { color: var(--text-3); }
+.top.is-done .body__title { color: var(--text-3); text-decoration: line-through; }
+.top--empty { background: transparent; box-shadow: none; border: 1.5px dashed var(--line-strong); color: var(--text-2); width: 100%; text-align: start; transition: border-color var(--t-fast), background-color var(--t-fast), transform var(--t-base) var(--ease-spring); }
+.top--empty:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-text); }
+.top--empty:active { transform: scale(0.98); }
+.top--empty .top__n { color: var(--line-strong); }
+
+/* ================= Plan (morning) ================= */
+.sheet--plan { min-height: min(88dvh, 760px); align-content: start; }
+.plan__hello { font-family: var(--font-display); font-weight: var(--w-bold); font-size: var(--fs-31); line-height: 1.25; }
+.plan__sub { color: var(--text-2); font-size: var(--fs-14); margin-top: -12px; }
+.plan-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--s-2); padding-block: var(--s-3); border-bottom: 1px solid var(--line); }
+.plan-row:last-child { border-bottom: 0; }
+.plan-row b { font-weight: var(--w-regular); font-size: var(--fs-16); display: block; overflow-wrap: anywhere; }
+.plan-row small { font-size: var(--fs-12); color: var(--danger); }
+.plan-row__acts { display: flex; gap: 4px; }
+.btn--xs { height: 30px; padding-inline: 10px; font-size: var(--fs-12); border-radius: var(--r-sm); }
+.picks { display: grid; gap: var(--s-2); }
+.pick { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: var(--s-3); width: 100%; padding: var(--s-3); border-radius: var(--r-md); background: var(--surface-2); text-align: start; transition: background-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-base) var(--ease-spring); }
+.pick:hover { background: var(--surface-3); }
+.pick:active { transform: scale(0.98); }
+.pick[aria-pressed="true"] { background: var(--accent-soft); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.pick__n { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; box-shadow: inset 0 0 0 1.5px var(--line-strong); font-size: var(--fs-14); font-weight: var(--w-bold); color: var(--text-3); font-variant-numeric: tabular-nums; transition: background-color var(--t-base), color var(--t-base), transform var(--t-slow) var(--ease-spring); }
+.pick[aria-pressed="true"] .pick__n { background: var(--accent); color: #fff; box-shadow: none; transform: scale(1.06); }
+.pick:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ================= View entrance ================= */
+.view.is-entering > * { animation: rise 460ms var(--ease-out) both; }
+.view.is-entering > :nth-child(2) { animation-delay: 50ms; }
+.view.is-entering > :nth-child(3) { animation-delay: 100ms; }
+.view.is-entering > :nth-child(4) { animation-delay: 150ms; }
+.view.is-entering > :nth-child(5) { animation-delay: 200ms; }
+.view.is-entering > :nth-child(n+6) { animation-delay: 240ms; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
 /* ================= Desktop ================= */
 @media (min-width: 960px) {
   .app { display: grid; grid-template-columns: 256px minmax(0, 1fr); padding-bottom: 0; }
@@ -541,6 +638,10 @@ button.stat:active { transform: scale(0.98); }
   .sheet__grid { grid-template-columns: 1fr 1fr; column-gap: var(--s-5); }
   .sheet__grid .wide { grid-column: 1 / -1; }
   .toast { bottom: var(--s-6); left: calc(50% - 128px); }
+  .top3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .now { padding: var(--s-6) var(--s-6) var(--s-5); }
+  .now__title { font-size: var(--fs-39); }
+  .now .ribbon__track { height: 52px; }
   .calwrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-5); align-items: start; }
 }
 @media (min-width: 1280px) {
@@ -651,11 +752,11 @@ const ICON_URI = svgURI(iconSVG(1024));
 /* ================= Data ================= */
 const LISTS = { work: "العمل", personal: "شخصي", home: "البيت", health: "الصحة" };
 const LIST_KEYS = Object.keys(LISTS);
-const REMINDS = [[null, "بدون"], [0, "عند الموعد"], [10, "قبل ١٠ د"], [30, "قبل ٣٠ د"], [60, "قبل ساعة"]];
+const REMINDS = [[null, "بدون"], [0, "عند الموعد"], [10, "قبل ١٠ د"], [15, "قبل ربع ساعة"], [30, "قبل ٣٠ د"], [60, "قبل ساعة"]];
 const DURS = [[15, "١٥ د"], [30, "٣٠ د"], [60, "ساعة"], [90, "ساعة ونص"], [120, "ساعتين"]];
 
 const LS_KEY = "maham.v2";
-const DEFAULT = () => ({ v: 2, tasks: [], notes: [], settings: { theme: "auto", digits: "arab" }, onboarded: false, updated: 0 });
+const DEFAULT = () => ({ v: 2, tasks: [], notes: [], plan: {}, planDay: null, settings: { theme: "auto", digits: "arab" }, onboarded: false, updated: 0 });
 let S = DEFAULT();
 function loadLocal() {
   try {
@@ -676,7 +777,7 @@ function persist() {
 function hydrate(d) {
   if (d && d.v !== 2) d = migrate(d);
   const b = DEFAULT();
-  S = { ...b, ...d, settings: { ...b.settings, ...(d && d.settings) }, tasks: Array.isArray(d && d.tasks) ? d.tasks : [], notes: Array.isArray(d && d.notes) ? d.notes : [] };
+  S = { ...b, ...d, plan: (d && d.plan) || {}, settings: { ...b.settings, ...(d && d.settings) }, tasks: Array.isArray(d && d.tasks) ? d.tasks : [], notes: Array.isArray(d && d.notes) ? d.notes : [] };
 }
 const wait = ms => new Promise(r => setTimeout(r, ms));
 async function connectRemote() {
@@ -738,6 +839,92 @@ const onDay = k => S.tasks.filter(t => t.day === k);
 const lateOpen = () => S.tasks.filter(t => !t.done && t.day && t.day < today());
 const doneToday = () => S.tasks.filter(t => t.done && t.doneAt && keyOf(new Date(t.doneAt)) === today());
 
+/* ================= Natural-language parser (Gulf Arabic) ================= */
+const toLatin = t => t.replace(/[٠-٩]/g, d => AR.indexOf(d)).replace(/[٫،]/g, m => m === "٫" ? "." : "،");
+const WD = [["الأحد", "الاحد", "حد"], ["الاثنين", "الإثنين", "اثنين", "الاثنينه"], ["الثلاثاء", "الثلاثا", "الثلوث"], ["الأربعاء", "الاربعاء", "الاربعا", "الربوع"], ["الخميس"], ["الجمعة", "الجمعه"], ["السبت"]];
+const MONTHS = ["يناير", "فبراير", "مارس", "أبريل|ابريل", "مايو", "يونيو", "يوليو", "أغسطس|اغسطس", "سبتمبر", "أكتوبر|اكتوبر", "نوفمبر", "ديسمبر"];
+const PM = "م|مساء|مساءً|المسا|المساء|العصر|عصر|المغرب|مغرب|العشا|العشاء|الليل|بالليل|ليل|في الليل";
+const AM = "ص|صباحا|صباحاً|الصبح|الصباح|صباح|الفجر|بدري";
+const W = "(?=[\\s،.]|$)";
+const nearest = (v, opts) => opts.reduce((a, b) => Math.abs(b - v) < Math.abs(a - v) ? b : a);
+function parseNL(raw) {
+  let t = " " + toLatin(raw) + " ";
+  const r = {};
+  const cut = re => { const m = t.match(re); if (m) t = t.replace(m[0], " "); return m; };
+  const base = new Date(); base.setHours(0, 0, 0, 0);
+  // list (hashtag)
+  let m = cut(/#(\S+)/);
+  if (m) { const w = m[1]; r.list = /عمل|شغل|دوام/.test(w) ? "work" : /شخص/.test(w) ? "personal" : /بيت|منزل/.test(w) ? "home" : /صح|رياض/.test(w) ? "health" : undefined; }
+  // reminder
+  m = cut(new RegExp("(?:ذكرني|ذكريني|نبهني|نبهيني|مع تذكير|تذكير)(?:\\s+(?:قبل(?:ها|ه)?)\\s+(ربع\\s+ساعة|ربع\\s+ساعه|نص\\s+ساعة|نص\\s+ساعه|نصف\\s+ساعة|ساعة|ساعه|(\\d+)\\s*(?:دقايق|دقائق|دقيقة|دقيقه|د)))?" + W));
+  if (m) {
+    let v = 0;
+    if (m[1]) v = /ربع/.test(m[1]) ? 15 : /نص/.test(m[1]) ? 30 : /ساع/.test(m[1]) && !m[2] ? 60 : +m[2];
+    r.remind = nearest(v, [0, 10, 15, 30, 60]);
+  }
+  // duration
+  m = cut(new RegExp("لمدة\\s+(ربع\\s+ساعة|نص\\s+ساعة|ساعة\\s+ونص|ساعتين|ساعة|ساعه|(\\d+)\\s*(دقايق|دقائق|دقيقة|دقيقه|ساعات|ساعة))" + W));
+  if (m) { const x = m[1]; const v = /ربع/.test(x) ? 15 : /ونص/.test(x) ? 90 : /نص/.test(x) ? 30 : /ساعتين/.test(x) ? 120 : m[2] ? (+m[2] * (/ساع/.test(m[3]) ? 60 : 1)) : 60; r.dur = nearest(v, [15, 30, 60, 90, 120]); }
+  // explicit date: 25/11 or 25 نوفمبر
+  m = cut(/(?:يوم\s+)?(\d{1,2})\s*\/\s*(\d{1,2})/);
+  if (m) { const d = new Date(base.getFullYear(), +m[2] - 1, +m[1]); if (d < base) d.setFullYear(d.getFullYear() + 1); r.day = keyOf(d); }
+  if (!r.day) { m = cut(new RegExp("(?:يوم\\s+)?(\\d{1,2})\\s+(" + MONTHS.join("|") + ")")); if (m) { const mi = MONTHS.findIndex(x => x.split("|").includes(m[2])); const d = new Date(base.getFullYear(), mi, +m[1]); if (d < base) d.setFullYear(d.getFullYear() + 1); r.day = keyOf(d); } }
+  // relative day words
+  if (!r.day && (m = cut(new RegExp("بعد\\s+(?:بكر[هة]|بكرا|باكر)" + W)))) r.day = keyOf(addDays(base, 2));
+  if (!r.day && (m = cut(new RegExp("(?:^|\\s)(?:بكر[هة]|بكرا|باكر|غد[اًا]?|غداً)" + W)))) r.day = keyOf(addDays(base, 1));
+  if (!r.day && (m = cut(new RegExp("(?:^|\\s)(?:اليوم|الحين)" + W)))) r.day = keyOf(base);
+  if (!r.day && (m = cut(new RegExp("(?:^|\\s)(?:الأسبوع|الاسبوع)\\s+(?:الجاي|القادم|الياي)" + W)))) r.day = keyOf(addDays(base, 7));
+  if (!r.day) {
+    for (let i = 0; i < 7 && !r.day; i++) for (const w of WD[i]) {
+      if (new RegExp("صلا[ةه]\\s+" + w).test(t)) continue;
+      const mm = cut(new RegExp("(?:^|\\s)(?:يوم\\s+)?" + w + "(?:\\s+(?:الجاي|القادم|الياي))?" + W));
+      if (mm) { let diff = (i - base.getDay() + 7) % 7; if (diff === 0) diff = 7; r.day = keyOf(addDays(base, diff)); break; }
+    }
+  }
+  // time
+  const timeRe = new RegExp("(?:الساعة|الساعه|ساعة)?\\s*(\\d{1,2})(?::(\\d{2}))?\\s*(" + PM + "|" + AM + "|الظهر|ظهر)?" + W, "g");
+  m = null;
+  for (const c of t.matchAll(timeRe)) { if (c[2] || c[3] || /ساع/.test(c[0])) { m = c; break; } }
+  if (m) t = t.replace(m[0], " ");
+  const hasCue = !!m;
+  if (m && hasCue) {
+    let h = +m[1], mi = +(m[2] || 0); const per = m[3] || "";
+    if (h <= 24 && mi < 60) {
+      if (new RegExp("^(" + PM + ")$").test(per)) { if (h < 12) h += 12; if (h === 24 || (h === 12 && /ليل/.test(per))) h = 0; }
+      else if (new RegExp("^(" + AM + ")$").test(per)) { if (h === 12) h = 0; }
+      else if (/ظهر/.test(per)) { if (h < 11) h += 12; }
+      else if (h >= 1 && h <= 6) h += 12;
+      r.time = `${pad(h % 24)}:${pad(mi)}`;
+    }
+  }
+  if (!r.time) {
+    const pm = cut(new RegExp("(?:^|\\s)(?:وقت\\s+|بعد\\s+|قبل\\s+)?(الظهر|العصر|المغرب|العشا|العشاء|الصبح|الفجر)" + W));
+    if (pm) r.time = { "الظهر": "12:30", "العصر": "16:00", "المغرب": "18:00", "العشا": "19:30", "العشاء": "19:30", "الصبح": "08:00", "الفجر": "05:00" }[pm[1]];
+  }
+  if (r.time && !r.day) r.day = keyOf(base);
+  // list keywords (soft)
+  if (!r.list) {
+    if (/دكتور|طبيب|عياد|مستشفى|أسنان|اسنان|نادي|رياض|تمرين|مشي|صيدلي/.test(raw)) r.list = "health";
+    else if (/اجتماع|ميتنق|عميل|تقرير|ايميل|إيميل|مدير|عرض|دوام|مشروع|فريق/.test(raw)) r.list = "work";
+    else if (/مقاضي|أغراض|اغراض|فاتور|غسيل|تنظيف|البيت|سباك|صيان/.test(raw)) r.list = "home";
+  }
+  let title = t.replace(/\s+(?:الساعة|الساعه|يوم|في|على|عند|و|ب)\s*$/g, " ").replace(/^\s*(?:في|يوم)\s+/, " ").replace(/\s{2,}/g, " ").replace(/[\s،,.-]+$/g, "").trim();
+  r.title = title ? title.replace(/[0-9]/g, d => digits() === "arab" ? AR[d] : d) : "";
+  r.found = !!(r.day || r.time || r.remind != null || r.dur || (r.list && /#/.test(raw)));
+  return r;
+}
+function tokensHTML(r, raw) {
+  if (!raw || !raw.trim()) return "";
+  const out = [];
+  if (r.day) out.push(`<span class="tok">${I.calSm.replace('width="16" height="16"', 'width="13" height="13"')}${esc(dayLabel(r.day))}</span>`);
+  if (r.time) out.push(`<span class="tok num">${I.clock}${esc(fmtT(r.time))}</span>`);
+  if (r.dur) out.push(`<span class="tok num">${esc(N(DURS.find(x => x[0] === r.dur)[1]))}</span>`);
+  if (r.remind != null) out.push(`<span class="tok tok--remind">${I.bell}${esc(REMINDS.find(x => x[0] === r.remind)[1])}</span>`);
+  if (r.list) out.push(`<span class="tok tok--list" style="--c:var(--c-${r.list})"><i class="dot" style="--c:var(--c-${r.list})"></i>${LISTS[r.list]}</span>`);
+  return out.join("");
+}
+const inLabel = m => m < 1 ? "الحين" : m < 60 ? `بعد ${N(m)} د` : m < 120 ? `بعد ساعة${m % 60 ? " و" + N(m % 60) + " د" : ""}` : `بعد ${N(Math.floor(m / 60))} ساعات`;
+
 /* ================= Settings ================= */
 const hostTheme = document.documentElement.getAttribute("data-theme");
 function applySettings() {
@@ -760,6 +947,7 @@ function setView(v, push = true) {
   view = [...VIEWS.map(x => x.id), "prefs"].includes(v) ? v : "today";
   if (push) { try { history.replaceState(null, "", view === "today" ? location.pathname + location.search : "#" + view); } catch {} }
   render(); window.scrollTo({ top: 0 });
+  const ve = $("#view-" + view); ve.classList.remove("is-entering"); void ve.offsetWidth; ve.classList.add("is-entering"); setTimeout(() => ve.classList.remove("is-entering"), 800);
 }
 window.addEventListener("hashchange", () => setView(location.hash.slice(1), false));
 
@@ -785,6 +973,7 @@ function render() {
     notes: ["", "الملاحظات"],
     prefs: ["", "الإعدادات"],
   }[view];
+  $(".head").hidden = view === "today";
   $("#eyebrow").textContent = head[0]; $("#eyebrow").hidden = !head[0];
   $("#title").innerHTML = head[1];
   ({ today: renderToday, calendar: renderCalendar, tasks: renderTasks, notes: renderNotes, prefs: renderPrefs })[view]();
@@ -829,39 +1018,88 @@ function emptyArt() {
 }
 
 /* ---------- today ---------- */
-function ribbon(k, items) {
+function ribbonTrack(k, items) {
   const S0 = 6 * 60, S1 = 24 * 60, span = S1 - S0;
   const pos = m => Math.max(0, Math.min(100, ((m - S0) / span) * 100));
-  const blocks = items.filter(t => t.time).map(t => { const a = mins(t.time), b = a + (t.dur || 30); return `<button type="button" class="blk${t.done ? " is-done" : ""}" data-id="${t.id}" data-act="edit" style="--c:var(--c-${t.list || "personal"});inset-inline-start:${pos(a)}%;width:${Math.max(1.2, pos(b) - pos(a))}%" aria-label="${esc(t.title)} ${esc(fmtT(t.time))}"></button>`; }).join("");
+  const blocks = items.filter(t => t.time).map(t => { const a = mins(t.time), b = a + (t.dur || 30); return `<button type="button" class="blk${t.done ? " is-done" : ""}" data-id="${t.id}" data-act="edit" style="--c:var(--c-${t.list || "personal"});inset-inline-start:${pos(a)}%;width:${Math.max(1.4, pos(b) - pos(a))}%" aria-label="${esc(t.title)} ${esc(fmtT(t.time))}" title="${esc(t.title)} · ${esc(fmtT(t.time))}"></button>`; }).join("");
   const n = new Date(); const nm = n.getHours() * 60 + n.getMinutes();
-  const now = k === today() && nm >= S0 && nm <= S1 ? `<i class="now" style="inset-inline-start:${pos(nm)}%"></i>` : "";
+  const showNow = k === today() && nm >= S0 && nm <= S1;
   const hours = [6, 9, 12, 15, 18, 21, 24].map(h => `<span>${N(((h + 11) % 12) + 1)}</span>`).join("");
-  const timed = items.filter(t => t.time && !t.done);
-  const next = timed.find(t => mins(t.time) + (t.dur || 30) > nm);
-  return `<div class="ribbon" aria-label="يومك من ٦ص إلى ١٢م"><div class="ribbon__head"><b>${k === today() ? "يومك" : esc(dayLabel(k))}</b><span class="num">${next && k === today() ? `التالي ${esc(fmtT(next.time))} · ${esc(next.title)}` : timed.length ? tasksW(timed.length) + " بوقت" : "ما فيه مواعيد"}</span></div>
-    <div class="ribbon__track" style="--past:${k === today() ? pos(nm) : 0}%">${blocks}${now}</div><div class="ribbon__hours num">${hours}</div></div>`;
+  return `<div class="ribbon__track" style="--past:${showNow ? pos(nm) : 0}%">${blocks}${showNow ? `<i class="nowline" style="inset-inline-start:${pos(nm)}%"></i>` : ""}</div><div class="ribbon__hours num">${hours}</div>`;
 }
+function ribbon(k, items) {
+  const timed = items.filter(t => t.time && !t.done);
+  return `<div class="ribbon"><div class="ribbon__head"><b>${esc(dayLabel(k))}</b><span class="num">${timed.length ? tasksW(timed.length) + " بوقت" : "ما فيه مواعيد"}</span></div>${ribbonTrack(k, items)}</div>`;
+}
+function sky(h) {
+  const P = [
+    [0, ["#0A1022", "#131D3A", "#24335A"], "rgb(200 215 255 / 0.22)"],
+    [5, ["#1B2A6B", "#3253C4", "#E09A7C"], "rgb(255 205 160 / 0.5)"],
+    [8, ["#11329F", "#2A57E6", "#4C8BFF"], "rgb(255 236 190 / 0.45)"],
+    [15, ["#1B2C86", "#3A4FD0", "#E09D4E"], "rgb(255 210 140 / 0.5)"],
+    [17.5, ["#22165A", "#55308E", "#E2694A"], "rgb(255 170 120 / 0.45)"],
+    [19.5, ["#0A1022", "#131D3A", "#24335A"], "rgb(200 215 255 / 0.22)"],
+  ];
+  let cur = P[0]; for (const p of P) if (h >= p[0]) cur = p;
+  const x = 100 - Math.max(0, Math.min(100, ((h - 5) / 15) * 100));
+  return `--sky1:${cur[1][0]};--sky2:${cur[1][1]};--sky3:${cur[1][2]};--sun:${cur[2]};--sun-x:${x.toFixed(1)}%`;
+}
+function nowCard(k, items, late, done, reminders) {
+  const n = new Date(), nm = n.getHours() * 60 + n.getMinutes();
+  const timed = items.filter(t => t.time && !t.done);
+  const live = timed.find(t => nm >= mins(t.time) && nm < mins(t.time) + (t.dur || 30));
+  const next = timed.find(t => mins(t.time) > nm);
+  const open = items.filter(t => !t.done).length + late.length;
+  const total = open + done.length;
+  let label, title, meta, isLive = false;
+  if (live) { isLive = true; label = `الحين · باقي ${N(mins(live.time) + (live.dur || 30) - nm)} د`; title = live.title; meta = `${fmtT(live.time)} – ${fmtT(endT(live.time, live.dur))} · ${LISTS[live.list]}`; }
+  else if (next) { label = `التالي · ${inLabel(mins(next.time) - nm)}`; title = next.title; meta = `${fmtT(next.time)} – ${fmtT(endT(next.time, next.dur))} · ${LISTS[next.list]}`; }
+  else { label = "باقي اليوم"; title = open ? "ما فيه مواعيد باقية" : total ? "خلصت مهام اليوم" : "يومك فاضي"; meta = open ? `${tasksW(open)} بدون وقت` : "أي مهمة جديدة تظهر هنا"; }
+  const pct = total ? Math.round(done.length / total * 100) : 0;
+  return `<section class="now" style="${sky(n.getHours() + n.getMinutes() / 60)}" aria-label="الآن">
+    <div class="now__top"><span class="now__date num">${esc(fmt(n, { weekday: "long", day: "numeric", month: "long" }))}</span><button type="button" class="now__plan" data-act="plan">${I.tasks.replace('width="24" height="24"', 'width="16" height="16"')}خطة اليوم</button></div>
+    <p class="now__label num${isLive ? " is-live" : ""}"><i></i>${esc(label)}</p>
+    <h2 class="now__title">${esc(title)}</h2>
+    <p class="now__meta num">${esc(meta)}</p>
+    ${ribbonTrack(k, items)}
+    <div class="now__stats">
+      <button type="button" class="now__stat" data-view="tasks"><b>${N(open)}<small>/ ${N(total)}</small></b><span>مهام باقية</span></button>
+      <a class="now__stat" href="#calendar" style="text-decoration:none"><b>${N(items.filter(t => t.time).length)}</b><span>${I.clock}مواعيد</span></a>
+      <div class="now__stat"><b>${N(reminders.length)}</b><span>${I.bell}تذكيرات</span></div>
+      <div class="now__bar" role="img" aria-label="${N(pct)}٪ من مهام اليوم"><i style="--p:${pct}%"></i></div>
+    </div>
+  </section>`;
+}
+function quickAdd(ph) {
+  return `<form class="qa" data-qa autocomplete="off"><div class="qa__field">${I.plusSm}<label class="sr" for="qa">مهمة سريعة</label><input id="qa" enterkeyhint="done" placeholder="${ph || "مهمة سريعة… مثلاً: اجتماع بكرة ٣ العصر"}" value="${esc(qaText)}"></div><div class="toks" id="qaToks">${tokensHTML(parseNL(qaText), qaText)}</div></form>`;
+}
+function topCards(k) {
+  const ids = (S.plan[k] || []).filter(id => find(id));
+  const its = ids.map(find);
+  const any = onDay(k).length + lateOpen().length;
+  if (!any) return "";
+  let h = its.map((t, i) => `<div class="top${t.done ? " is-done" : ""}" data-id="${t.id}"><span class="top__n">${N(i + 1)}</span><button type="button" class="body" data-act="edit"><span class="body__title">${esc(t.title)}</span>${metaFor(t)}</button>${checkBtn(t)}</div>`).join("");
+  for (let i = its.length; i < 3; i++) h += `<button type="button" class="top top--empty" data-act="plan-picks"><span class="top__n">${N(i + 1)}</span><span>${i === its.length ? "اختيار أولوية" : "فاضية"}</span><span></span></button>`;
+  return section("أهم ٣ اليوم", `<div class="top3">${h}</div>`, { aside: `<button type="button" class="link" data-act="plan-picks">${its.length ? "تعديل" : "اختيار"}</button>` });
+}
+let qaText = "";
 function renderToday() {
   const el = $("#view-today"), k = today();
   const items = onDay(k).sort(byTime);
   const late = lateOpen().sort(byTime);
-  const open = items.filter(t => !t.done);
-  const timed = items.filter(t => t.time);
-  const untimed = items.filter(t => !t.time && !t.done);
   const done = doneToday();
   const reminders = upcomingReminders(k);
+  const tops = new Set(S.plan[k] || []);
+  const timed = items.filter(t => t.time);
+  const untimed = items.filter(t => !t.time && !t.done && !tops.has(t.id));
+  let h = nowCard(k, items, late, done, reminders) + quickAdd();
   if (!items.length && !late.length && !done.length) {
-    el.innerHTML = ribbon(k, []) + `<div class="empty">${emptyArt()}<h2 class="empty__title">ما عندك شيء اليوم</h2><p class="empty__text">المهام والمواعيد تظهر هنا مع وقتها وتذكيرها.</p><button type="button" class="btn btn--primary" data-act="new-task">${I.plusSm}إضافة مهمة</button></div>`;
+    el.innerHTML = h + `<div class="empty">${emptyArt()}<h2 class="empty__title">ما عندك شيء اليوم</h2><p class="empty__text">اكتب المهمة فوق بالكلام العادي، مثل «اتصال بالبنك الساعة ١١» وتنضاف بوقتها.</p></div>`;
     return;
   }
-  const total = open.length + late.length + done.length;
-  let h = `<div class="stats">
-    <button type="button" class="stat" data-view="tasks"><span class="stat__n num">${N(open.length + late.length)}<small>/ ${N(total)}</small></span><span class="stat__l">مهام باقية</span></button>
-    <a class="stat" href="#calendar" style="text-decoration:none;color:inherit"><span class="stat__n num">${N(timed.length)}</span><span class="stat__l">${I.clock}مواعيد اليوم</span></a>
-    <div class="stat stat--remind"><span class="stat__n num">${N(reminders.length)}</span><span class="stat__l">${I.bell}تذكيرات</span></div>
-  </div>`;
-  h += ribbon(k, items);
-  if (late.length) h += section("متأخرة", `<ul class="list">${late.map(t => row(t, { day: false })).join("")}</ul>`, { count: late.length, aside: "انتقلت لليوم" });
+  h += topCards(k);
+  const lateRest = late.filter(t => !tops.has(t.id));
+  if (lateRest.length) h += section("متأخرة", `<ul class="list">${lateRest.map(t => row(t)).join("")}</ul>`, { count: lateRest.length, aside: "انتقلت لليوم" });
   if (timed.length) h += section("الجدول", `<ul class="agenda">${timed.map(ev).join("")}</ul>`, { count: timed.length });
   if (untimed.length) h += section("مهام بدون وقت", `<ul class="list">${untimed.map(t => row(t)).join("")}</ul>`, { count: untimed.length });
   const doneUntimed = done.filter(t => !t.time || t.day !== k);
@@ -910,7 +1148,7 @@ function renderTasks() {
   const up = pool.filter(t => !t.done && t.day && t.day > tk).sort((a, b) => a.day.localeCompare(b.day) || byTime(a, b));
   const some = pool.filter(t => !t.done && !t.day).sort(byTime);
   const done = pool.filter(t => t.done).sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0)).slice(0, 30);
-  let h = chips;
+  let h = quickAdd() + chips;
   if (!late.length && !tod.length && !up.length && !some.length) h += `<div class="empty">${emptyArt()}<h2 class="empty__title">ما فيه مهام هنا</h2><p class="empty__text">مهام هذي القائمة تظهر هنا.</p><button type="button" class="btn btn--primary" data-act="new-task">${I.plusSm}إضافة مهمة</button></div>`;
   if (late.length) h += section("متأخرة", `<ul class="list">${late.map(t => row(t)).join("")}</ul>`, { count: late.length });
   if (tod.length) h += section("اليوم", `<ul class="list">${tod.map(t => row(t)).join("")}</ul>`, { count: tod.length });
@@ -1032,27 +1270,39 @@ function closeSheet() {
   if (layer.hidden) return;
   if (mode === "note") commitNote();
   layer.classList.remove("is-open"); layer.classList.add("is-closing");
-  setTimeout(() => { layer.hidden = true; layer.classList.remove("is-closing"); sheet.classList.remove("sheet--note"); draft = null; mode = null; }, 220);
+  setTimeout(() => { layer.hidden = true; layer.classList.remove("is-closing"); sheet.classList.remove("sheet--note", "sheet--plan"); if (mode !== "task" && mode !== "note" && mode !== "plan") { draft = null; } draft = null; mode = null; }, 220);
   if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
   render();
 }
 function openTask(t, preset = {}) {
   mode = "task";
-  draft = t ? { ...t } : { id: null, title: "", note: "", day: preset.day ?? today(), time: preset.time || "", dur: 30, list: preset.list || (listFilter !== "all" ? listFilter : "work"), remind: null, prio: false };
-  sheet.classList.remove("sheet--note"); renderTaskSheet(); openLayer();
+  draft = t ? { ...t } : { id: null, baseDay: preset.day ?? today(), title: "", note: "", day: preset.day ?? today(), time: preset.time || "", dur: 30, list: preset.list || (listFilter !== "all" ? listFilter : "work"), remind: null, prio: false };
+  renderTaskSheet(); openLayer();
   setTimeout(() => { const i = $("#f-title"); if (i) { i.focus({ preventScroll: true }); i.setSelectionRange(i.value.length, i.value.length); } }, 60);
 }
 function renderTaskSheet() {
-  const d = draft, tk = today(), tm = tomorrow();
-  const custom = d.day && d.day !== tk && d.day !== tm;
-  const chip = (attr, val, label, on, cls = "") => `<button type="button" class="chip ${cls}" ${attr}="${val}" aria-pressed="${on}">${label}</button>`;
+  const d = draft;
+  sheet.classList.remove("sheet--note", "sheet--plan");
   sheet.innerHTML = `
     <div class="grabber" aria-hidden="true"></div>
     <div class="sheet__head"><h2 class="sheet__title" id="sheetTitle">${d.id ? "تعديل المهمة" : "مهمة جديدة"}</h2><button type="button" class="icon-btn" data-s="close" aria-label="إغلاق">${I.close}</button></div>
     <div class="sheet__inputs">
-      <label class="sr" for="f-title">اسم المهمة</label><input class="bare t1" id="f-title" maxlength="140" placeholder="اسم المهمة" value="${esc(d.title)}" enterkeyhint="done">
+      <label class="sr" for="f-title">اسم المهمة</label><input class="bare t1" id="f-title" maxlength="140" placeholder="${d.id ? "اسم المهمة" : "مثلاً: اجتماع بكرة ٣ العصر"}" value="${esc(d.title)}" enterkeyhint="done">
+      <div class="toks" id="nlToks"></div>
       <label class="sr" for="f-note">ملاحظة</label><input class="bare t2" id="f-note" maxlength="200" placeholder="تفاصيل (اختياري)" value="${esc(d.note || "")}">
     </div>
+    <div id="opts">${optsHTML()}</div>
+    <div class="sheet__foot">
+      ${d.id ? `<button type="button" class="btn btn--danger" data-s="delete">${I.trash}حذف</button>` : ""}
+      <button type="submit" class="btn btn--primary" id="f-submit" ${d.title.trim() || (d.note || "").trim() ? "" : "disabled"}>${d.id ? "حفظ" : "إضافة"}</button>
+    </div>`;
+}
+function renderOpts() { const o = $("#opts"); if (o) o.innerHTML = optsHTML(); }
+function optsHTML() {
+  const d = draft, tk = today(), tm = tomorrow();
+  const custom = d.day && d.day !== tk && d.day !== tm;
+  const chip = (attr, val, label, on, cls = "") => `<button type="button" class="chip ${cls}" ${attr}="${val}" aria-pressed="${on}">${label}</button>`;
+  return `
     <div class="sheet__grid">
       <div class="sheet__section wide"><span class="label">الموعد</span><div class="chips">
         ${chip("data-day", tk, "اليوم", d.day === tk)}${chip("data-day", tm, "بكرة", d.day === tm)}
@@ -1064,18 +1314,48 @@ function renderTaskSheet() {
       ${d.time ? `<div class="sheet__section"><span class="label">المدة</span><div class="chips">${DURS.map(([v, l]) => chip("data-dur", v, N(l), d.dur === v)).join("")}</div></div>` : ""}
       ${d.time ? `<div class="sheet__section wide"><span class="label">التذكير</span><div class="chips">${REMINDS.map(([v, l]) => chip("data-remind", v ?? "none", (v != null ? I.bellSm : "") + N(l), d.remind === v, "chip--remind")).join("")}</div></div>` : ""}
       <div class="sheet__section wide"><span class="label">القائمة</span><div class="chips">${LIST_KEYS.map(k => chip("data-l", k, `<i class="dot" style="--c:var(--c-${k})"></i>${LISTS[k]}`, d.list === k)).join("")}</div></div>
-    </div>
-    <div class="sheet__foot">
-      ${d.id ? `<button type="button" class="btn btn--danger" data-s="delete">${I.trash}حذف</button>` : ""}
-      <button type="submit" class="btn btn--primary" id="f-submit" ${d.title.trim() || (d.note || "").trim() ? "" : "disabled"}>${d.id ? "حفظ" : "إضافة"}</button>
     </div>`;
+}
+
+
+/* ================= Morning plan ================= */
+function openPlan(step) {
+  mode = "plan"; draft = { step: step || (lateOpen().length ? "carry" : "picks") };
+  S.planDay = today(); persist();
+  sheet.classList.remove("sheet--note"); sheet.classList.add("sheet--plan");
+  renderPlan(); if (layer.hidden) openLayer();
+}
+function renderPlan() {
+  const k = today(), late = lateOpen().sort(byTime), cand = S.tasks.filter(t => !t.done && t.day === k).sort(byTime);
+  const picks = S.plan[k] || [];
+  const n = new Date();
+  const carry = draft.step === "carry" && late.length;
+  sheet.innerHTML = `
+    <div class="grabber" aria-hidden="true"></div>
+    <div class="sheet__head"><h2 class="sheet__title" id="sheetTitle">خطة اليوم · <span class="num">${esc(fmt(n, { weekday: "long", day: "numeric", month: "long" }))}</span></h2><button type="button" class="icon-btn" data-s="close" aria-label="إغلاق">${I.close}</button></div>
+    ${carry ? `<h3 class="plan__hello">قبل ما نبدأ</h3><p class="plan__sub">${tasksW(late.length)} ما خلصت من قبل. وين نحطها؟</p>
+      <div>${late.map(t => `<div class="plan-row" data-id="${t.id}"><span><b>${esc(t.title)}</b><small class="num">${t.day === keyOf(addDays(n, -1)) ? "من أمس" : "من " + esc(fmtK(t.day, { day: "numeric", month: "long" }))}</small></span><span class="plan-row__acts"><button type="button" class="btn btn--xs btn--line" data-p="to-today">اليوم</button><button type="button" class="btn btn--xs btn--line" data-p="to-tomorrow">بكرة</button><button type="button" class="btn btn--xs btn--danger" data-p="drop" aria-label="حذف ${esc(t.title)}">${I.trash.replace('width="18" height="18"', 'width="14" height="14"')}</button></span></div>`).join("")}</div>
+      <div class="sheet__foot"><button type="button" class="btn btn--ghost" data-p="all-today">الكل لليوم</button><button type="button" class="btn btn--primary" data-p="next">التالي</button></div>`
+    : `<h3 class="plan__hello">وش أهم ٣ اليوم؟</h3><p class="plan__sub">الترتيب حسب الاختيار. تطلع أول شيء في صفحة اليوم.</p>
+      ${cand.length ? `<div class="picks">${cand.map(t => { const i = picks.indexOf(t.id); return `<button type="button" class="pick" data-p="pick" data-pid="${t.id}" aria-pressed="${i > -1}" ${i < 0 && picks.length >= 3 ? "disabled" : ""}><span class="pick__n num">${i > -1 ? N(i + 1) : ""}</span><span class="body"><span class="body__title">${esc(t.title)}</span>${metaFor(t)}</span></button>`; }).join("")}</div>` : `<div class="empty empty--flat"><p class="empty__text">ما فيه مهام اليوم للحين. اكتبها في الخانة السريعة بصفحة اليوم.</p></div>`}
+      <div class="sheet__foot"><button type="button" class="btn btn--primary" data-s="close">${picks.length ? "يلا نبدأ" : "تم"}</button></div>`}`;
+}
+function planAction(b) {
+  const p = b.dataset.p, row = b.closest("[data-id]"), t = row && find(row.dataset.id);
+  if (p === "to-today" && t) { t.day = today(); }
+  if (p === "to-tomorrow" && t) { t.day = tomorrow(); t.reminded = false; }
+  if (p === "drop" && t) S.tasks.splice(S.tasks.indexOf(t), 1);
+  if (p === "all-today") lateOpen().forEach(x => x.day = today());
+  if (p === "next" || p === "all-today" || (!lateOpen().length && draft.step === "carry")) draft.step = "picks";
+  if (p === "pick") { const id = b.dataset.pid, k = today(); const a = S.plan[k] = (S.plan[k] || []).filter(x => find(x)); const i = a.indexOf(id); if (i > -1) a.splice(i, 1); else if (a.length < 3) a.push(id); }
+  persist(); renderPlan();
 }
 
 /* ================= Note sheet ================= */
 function openNote(n) {
   mode = "note";
   draft = n ? { ...n } : { id: null, title: "", body: "", pinned: false };
-  sheet.classList.add("sheet--note");
+  sheet.classList.remove("sheet--plan"); sheet.classList.add("sheet--note");
   sheet.innerHTML = `
     <div class="grabber" aria-hidden="true"></div>
     <div class="sheet__head"><h2 class="sheet__title" id="sheetTitle">${n ? "ملاحظة" : "ملاحظة جديدة"}</h2>
@@ -1098,25 +1378,35 @@ function commitNote() {
 sheet.addEventListener("input", e => {
   if (!draft) return;
   const id = e.target.id;
-  if (id === "f-title") draft.title = e.target.value;
+  if (id === "f-title") {
+    draft.title = e.target.value;
+    if (!draft.id) {
+      const r = parseNL(draft.title); draft.parsed = r;
+      if (!draft.manual) { draft.day = r.day ?? draft.baseDay; draft.time = r.time || ""; draft.remind = r.time ? (r.remind ?? null) : null; if (r.dur) draft.dur = r.dur; }
+      if (!draft.manualList && r.list) draft.list = r.list;
+      $("#nlToks").innerHTML = r.found ? tokensHTML(r, draft.title) : "";
+      renderOpts();
+    }
+  }
   if (id === "f-note") draft.note = e.target.value;
   if (id === "f-title" || id === "f-note") $("#f-submit").disabled = !(draft.title.trim() || (draft.note || "").trim());
   if (id === "n-title") draft.title = e.target.value;
   if (id === "n-body") draft.body = e.target.value;
 });
 sheet.addEventListener("change", e => {
-  if (e.target.id === "f-date" && e.target.value) { draft.day = e.target.value; renderTaskSheet(); }
-  if (e.target.id === "f-time") { draft.time = e.target.value; renderTaskSheet(); }
+  if (e.target.id === "f-date" && e.target.value) { draft.day = e.target.value; draft.manual = true; renderOpts(); }
+  if (e.target.id === "f-time") { draft.time = e.target.value; draft.manual = true; renderOpts(); }
 });
 sheet.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b || !draft) return;
-  if (b.dataset.day !== undefined) { draft.day = b.dataset.day || null; if (!draft.day) { draft.time = ""; draft.remind = null; } renderTaskSheet(); return; }
-  if (b.dataset.dur) { draft.dur = +b.dataset.dur; renderTaskSheet(); return; }
-  if (b.dataset.remind) { draft.remind = b.dataset.remind === "none" ? null : +b.dataset.remind; draft.reminded = false; renderTaskSheet(); return; }
-  if (b.dataset.l) { draft.list = b.dataset.l; renderTaskSheet(); return; }
+  if (b.dataset.p) { planAction(b); return; }
+  if (b.dataset.day !== undefined) { draft.day = b.dataset.day || null; if (!draft.day) { draft.time = ""; draft.remind = null; } draft.manual = true; renderOpts(); return; }
+  if (b.dataset.dur) { draft.dur = +b.dataset.dur; renderOpts(); return; }
+  if (b.dataset.remind) { draft.remind = b.dataset.remind === "none" ? null : +b.dataset.remind; draft.reminded = false; renderOpts(); return; }
+  if (b.dataset.l) { draft.list = b.dataset.l; draft.manualList = true; renderOpts(); return; }
   const s = b.dataset.s;
   if (s === "close") closeSheet();
-  if (s === "clear-time") { draft.time = ""; draft.remind = null; renderTaskSheet(); }
+  if (s === "clear-time") { draft.time = ""; draft.remind = null; renderOpts(); }
   if (s === "delete") { const t = find(draft.id), i = S.tasks.indexOf(t); S.tasks.splice(i, 1); persist(); draft = null; mode = null; closeSheet(); toast("انحذفت المهمة", () => { S.tasks.splice(i, 0, t); persist(); render(); }); }
   if (s === "pin") { draft.pinned = !draft.pinned; b.setAttribute("aria-pressed", String(draft.pinned)); b.innerHTML = draft.pinned ? I.pinFill : I.pin; b.style.color = draft.pinned ? "var(--accent)" : ""; }
   if (s === "note-delete") { const n = S.notes.find(x => x.id === draft.id), i = S.notes.indexOf(n); S.notes.splice(i, 1); persist(); draft = null; mode = null; closeSheet(); toast("انحذفت الملاحظة", () => { S.notes.splice(i, 0, n); persist(); render(); }); }
@@ -1124,6 +1414,7 @@ sheet.addEventListener("click", e => {
 sheet.addEventListener("submit", async e => {
   e.preventDefault(); if (mode !== "task") return;
   let title = draft.title.trim(), note = (draft.note || "").trim();
+  if (!draft.id && draft.parsed && draft.parsed.found && draft.parsed.title) title = draft.parsed.title;
   if (!title && note) { title = note; note = ""; }
   if (!title) return;
   $("#f-submit").classList.add("is-loading");
@@ -1162,6 +1453,8 @@ document.addEventListener("click", e => {
   else if (a === "edit" && id) openTask(find(id));
   else if (a === "new-task") openTask(null, { day: b.dataset.day || (view === "calendar" && calSel ? calSel : today()) });
   else if (a === "new-note") openNote(null);
+  else if (a === "plan") openPlan();
+  else if (a === "plan-picks") openPlan("picks");
   else if (a === "showdone") { showDone = !showDone; render(); }
   else if (a === "cal-prev") { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1); render(); }
   else if (a === "cal-next") { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1); render(); }
@@ -1171,6 +1464,19 @@ document.addEventListener("click", e => {
   else if (a === "do-clear-done") { const n = S.tasks.filter(t => t.done).length; S.tasks = S.tasks.filter(t => !t.done); confirmKind = null; persist(); render(); toast(`انحذفت ${tasksW(n)}`); }
   else if (a === "do-reset") { S.tasks = []; S.notes = []; confirmKind = null; persist(); render(); toast("انحذفت كل البيانات"); }
   else if (a === "replay") openOnboarding();
+});
+document.addEventListener("input", e => { if (e.target.id === "qa") { qaText = e.target.value; const r = parseNL(qaText); $("#qaToks").innerHTML = r.found ? tokensHTML(r, qaText) : (qaText.trim() ? `<span class="tok tok--hint">Enter للإضافة لليوم</span>` : ""); return; } });
+document.addEventListener("submit", e => {
+  if (!e.target.matches("[data-qa]")) return;
+  e.preventDefault();
+  const raw = qaText.trim(); if (!raw) return;
+  const r = parseNL(raw);
+  const title = (r.found && r.title) || raw;
+  const day = r.day || (view === "tasks" && listFilter !== "all" ? today() : today());
+  S.tasks.push({ id: uid(), title, note: "", day, time: r.time || "", dur: r.dur || 30, list: r.list || (view === "tasks" && listFilter !== "all" ? listFilter : "work"), remind: r.time ? (r.remind ?? null) : null, done: false, doneAt: null, reminded: false, created: Date.now() });
+  persist(); qaText = ""; render();
+  const i = $("#qa"); if (i) i.focus({ preventScroll: true });
+  toast(day !== today() ? `انضافت لـ${dayLabel(day)}${r.time ? " " + fmtT(r.time) : ""}` : r.time ? `انضافت لليوم ${fmtT(r.time)}` : "انضافت لليوم");
 });
 document.addEventListener("input", e => { if (e.target.id === "noteSearch") { noteQuery = e.target.value; const pos = e.target.selectionStart; renderNotes(); const i = $("#noteSearch"); i.focus(); i.setSelectionRange(pos, pos); } });
 
@@ -1184,7 +1490,7 @@ const SLIDES = [
       <div style="inset-inline-start:60px;bottom:0;width:180px;transform:rotate(-1deg)"><span class="art-line" style="width:100px;background:var(--text)"></span><span class="art-line"></span><span class="art-line" style="width:80%"></span></div></div>` },
   { title: "اليوم كله بنظرة", text: "شريط واحد يعرض مواعيد اليوم من الصبح لليل، مع الوقت الحالي.",
     art: () => `<div class="art-ribbon"><div class="ribbon__head"><b>يومك</b><span>التالي ١١:٠٠ ص</span></div><div class="ribbon__track">
-      <i class="blk" style="--c:var(--c-work);inset-inline-start:16%;width:9%"></i><i class="blk" style="--c:var(--c-work);inset-inline-start:30%;width:6%"></i><i class="blk" style="--c:var(--c-personal);inset-inline-start:48%;width:5%"></i><i class="blk" style="--c:var(--c-health);inset-inline-start:69%;width:8%"></i><i class="blk" style="--c:var(--c-home);inset-inline-start:84%;width:6%"></i><i class="now" style="inset-inline-start:24%"></i></div>
+      <i class="blk" style="--c:var(--c-work);inset-inline-start:16%;width:9%"></i><i class="blk" style="--c:var(--c-work);inset-inline-start:30%;width:6%"></i><i class="blk" style="--c:var(--c-personal);inset-inline-start:48%;width:5%"></i><i class="blk" style="--c:var(--c-health);inset-inline-start:69%;width:8%"></i><i class="blk" style="--c:var(--c-home);inset-inline-start:84%;width:6%"></i><i class="nowline" style="inset-inline-start:24%"></i></div>
       <div class="ribbon__hours"><span>٦</span><span>٩</span><span>١٢</span><span>٣</span><span>٦</span><span>٩</span><span>١٢</span></div></div>` },
   { title: "تذكير في وقته", text: "التذكير يظهر قبل الموعد بالوقت المختار، ومنه تأجيل المهمة أو إنهاؤها.",
     art: () => `<div class="art-banner"><div class="banner"><span class="banner__icon">${I.bellLg}</span><span class="banner__text"><b>اجتماع فريق التصميم</b><span>بعد ١٠ د · ١:٣٠ م · العمل</span></span><span class="banner__actions"><span class="btn btn--sm btn--line">بعد ١٠ دقائق</span><span class="btn btn--sm btn--primary">تم</span></span></div></div>` },
@@ -1227,7 +1533,7 @@ onbEl.addEventListener("input", e => { if (e.target.id === "firstInput") $("#fir
 onbEl.addEventListener("submit", e => {
   e.preventDefault(); const v = $("#firstInput").value.trim(); if (!v) return;
   S.tasks.push({ id: uid(), title: v, note: "", day: today(), time: "", dur: 30, list: "work", remind: null, done: false, doneAt: null, reminded: false, created: Date.now() });
-  view = "today"; closeOnboarding(); toast("انضافت المهمة");
+  S.planDay = today(); view = "today"; closeOnboarding(); toast("انضافت المهمة");
 });
 let tsx = null;
 onbEl.addEventListener("touchstart", e => { tsx = e.touches[0].clientX; }, { passive: true });
@@ -1243,6 +1549,7 @@ function boot() {
   const h = location.hash.slice(1); if ([...VIEWS.map(v => v.id), "prefs"].includes(h)) view = h;
   render();
   if (!S.onboarded) openOnboarding();
+  else if (S.planDay !== today() && (lateOpen().length || S.tasks.filter(t => !t.done && t.day === today()).length >= 2)) setTimeout(() => { if (layer.hidden) openPlan(); }, 500);
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applySettings);
   addEventListener("resize", () => renderSide());
   let lastDay = today(), lastMin = new Date().getMinutes();
@@ -1250,7 +1557,7 @@ function boot() {
   setTimeout(checkReminders, 1500);
   connectRemote();
 }
-window.__maham = { get state() { return S; }, render, setView, showBanner: id => showBanner(find(id)) };
+window.__maham = { get state() { return S; }, render, setView, showBanner: id => showBanner(find(id)), openPlan, parseNL };
 boot();
 })();
 </script>

@@ -38,7 +38,7 @@ const NOTES = [
   { id: "n4", title: "كتب أبي أقرأها", body: "العادات الذرية\nالعمل العميق\nفن اللامبالاة", pinned: false, created: 4, updated: done(5) },
   { id: "n5", title: "وصفة الكيكة", body: "٣ بيض، كوب سكر، كوب طحين، نص كوب زيت، فانيلا. ١٨٠ درجة لمدة ٣٥ دقيقة.", pinned: false, created: 5, updated: done(4) },
 ];
-const state = (tasks, extra = {}) => ({ v: 2, tasks, notes: [], settings: { theme: "auto", digits: "arab" }, onboarded: true, updated: 1, ...extra });
+const state = (tasks, extra = {}) => ({ v: 2, tasks, notes: [], plan: {}, planDay: day(0), settings: { theme: "auto", digits: "arab" }, onboarded: true, updated: 1, ...extra });
 const devices = {
   phone: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
   desktop: { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 },
@@ -62,7 +62,7 @@ async function shot(name, dev, scheme, st, act, full = false) {
   await page.screenshot({ path: `${out}/${name}-${dev}-${scheme}.png`, fullPage: false });
   await ctx.close();
 }
-const F = () => state(FULL, { notes: NOTES });
+const F = () => state(FULL, { notes: NOTES, plan: { [day(0)]: ["t1", "t7", "t9"] } });
 const go = v => p => p.evaluate(v => window.__maham.setView(v), v);
 for (const dev of ["phone", "desktop"]) for (const scheme of ["light", "dark"]) {
   await shot("01-onb1", dev, scheme, null);
@@ -78,6 +78,9 @@ for (const dev of ["phone", "desktop"]) for (const scheme of ["light", "dark"]) 
   await shot("11-sheet", dev, scheme, F(), async p => { await p.click(".ev .body"); await p.waitForTimeout(500); });
   await shot("12-note", dev, scheme, F(), async p => { await go("notes")(p); await p.click("[data-note=n1]"); await p.waitForTimeout(500); });
   await shot("13-prefs", dev, scheme, F(), go("prefs"));
+  await shot("15-plan", dev, scheme, state(FULL, { notes: NOTES, planDay: day(-1) }), async p => { await p.waitForTimeout(900); });
+  await shot("16-planpicks", dev, scheme, state(FULL, { notes: NOTES }), async p => { await p.evaluate(() => window.__maham.openPlan("picks")); await p.waitForTimeout(500); await p.click("[data-pid=t1]"); await p.click("[data-pid=t7]"); });
+  await shot("17-qa", dev, scheme, F(), async p => { await p.fill("#qa", "اجتماع مع ريم بكرة ٣ العصر ذكرني قبل ربع ساعة"); await p.waitForTimeout(400); });
   await shot("14-banner", dev, scheme, F(), async p => { await p.evaluate(() => window.__maham.showBanner("t2")); await p.waitForTimeout(700); });
 }
 await browser.close();
